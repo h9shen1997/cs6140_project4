@@ -14,7 +14,7 @@ class GreekTransform:
 
     def __call__(self, x):
         x = torchvision.transforms.functional.rgb_to_grayscale(x)
-        x = torchvision.transforms.functional.affine(x, 0, (0, 0), 36 / 128, 0)
+        x = torchvision.transforms.functional.affine(x, 0, (0, 0), 1/120, 0)
         x = torchvision.transforms.functional.center_crop(x, (28, 28))
         return torchvision.transforms.functional.invert(x)
 
@@ -30,18 +30,18 @@ def main():
         param.requires_grad = False
 
     greek_train = torch.utils.data.DataLoader(
-        torchvision.datasets.ImageFolder('./greek_train', transform=torchvision.transforms.Compose(
+        torchvision.datasets.ImageFolder('./greek_train_extra', transform=torchvision.transforms.Compose(
             [torchvision.transforms.ToTensor(), GreekTransform(),
              torchvision.transforms.Normalize((0.1307,), (0.3081,))])), batch_size=batch_size_train, shuffle=True
     )
 
     greek_test = torch.utils.data.DataLoader(
-        torchvision.datasets.ImageFolder('./greek_train', transform=torchvision.transforms.Compose(
+        torchvision.datasets.ImageFolder('./greek_test_extra', transform=torchvision.transforms.Compose(
             [torchvision.transforms.ToTensor(), GreekTransform(),
              torchvision.transforms.Normalize((0.1307,), (0.3081,))])), batch_size=batch_size_test, shuffle=True
     )
 
-    network.fc2 = nn.Linear(50, 3)
+    network.fc2 = nn.Linear(50, 24)
     optimizer = optim.SGD(network.parameters(), lr=learning_rate, momentum=momentum)
     print(network)
 
@@ -57,7 +57,7 @@ def main():
         plt.imshow(example_data[i][0], cmap='gray', interpolation='none')
         plt.xticks([])
         plt.yticks([])
-    plt.savefig(f'images/task3_greek_letter_outputs')
+    plt.savefig(f'images/task4_greek_letter_outputs')
     plt.show()
 
     train_losses = []
@@ -78,8 +78,8 @@ def main():
                     f'Train epoch: {epoch} [{batch_idx * len(data)}/{len(greek_train.dataset)} ({100. * batch_idx / len(greek_train):.0f}%)]\tLoss: {loss.item():.6f}')
                 train_losses.append(loss.item())
                 train_counter.append(batch_idx * 64 + (epoch - 1) * len(greek_train.dataset))
-                torch.save(network.state_dict(), 'results/task3_model.pth')
-                torch.save(optimizer.state_dict(), 'results/task3_optimizer.pth')
+                torch.save(network.state_dict(), 'results/extension2_model.pth')
+                torch.save(optimizer.state_dict(), 'results/extension2_optimizer.pth')
 
     def test():
         network.eval()
@@ -107,7 +107,7 @@ def main():
     plt.legend(['Train Loss', 'Test Loss'], loc='upper right')
     plt.xlabel('number of training examples seen')
     plt.ylabel('negative log likelihood loss')
-    plt.savefig('images/task3_greek_letter_performance')
+    plt.savefig('images/extension2_greek_letter_performance')
     plt.show()
 
     with torch.no_grad():
@@ -120,7 +120,7 @@ def main():
         plt.title(f'Prediction: {output.data.max(1, keepdim=True)[1][i].item()}')
         plt.xticks([])
         plt.yticks([])
-    plt.savefig('images/task3_greek_letter_outputs_with_prediction_label')
+    plt.savefig('images/extension2_greek_letter_outputs_with_prediction_label')
     plt.show()
 
 
