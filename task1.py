@@ -1,3 +1,8 @@
+"""
+CS6140 Project 4
+@filename: task1.py
+@author: Haotian Shen, Qiaozhi Liu
+"""
 import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn

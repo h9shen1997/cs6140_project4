@@ -1,3 +1,8 @@
+"""
+CS6140 Project 4
+@filename: task2.py
+@author: Haotian Shen, Qiaozhi Liu
+"""
 import itertools
 
 import torch
